@@ -40,9 +40,9 @@ var tBoard1 = [
 				]
 				
 var tBoard2 = [
-				[0,0,0,0,0,0,0,0,0,0],
-				[0,0,0,0,0,0,0,0,0,0],
-				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,1],
+				[0,0,0,0,0,0,0,0,0,1],
+				[0,0,0,0,0,0,0,0,0,1],
 				[0,0,0,0,0,0,0,0,0,0],
 				[0,0,0,0,0,0,0,0,0,0],
 				[0,0,0,0,0,0,0,0,0,0],
@@ -172,14 +172,18 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 			tBoard = tBoard2;
 			for (i = 0; i < cols; i++) {
 				for (j = 0; j < rows; j++) {
+					document.getElementById('b'+j+i).innerHTML="";
+					document.getElementById('b'+j+i).style.background='#adfaff';
 					if(tBoard[j][i]==3){
 						document.getElementById('b'+j+i).style.background='#ffffff';
 					} 	
 					else if(tBoard[j][i]==2){
 						document.getElementById('b'+j+i).style.background='#f43d3d';
+						document.getElementById('b'+j+i).innerHTML="X";
 					}
-					else{
+					else if(tBoard[j][i]==1){
 						document.getElementById('b'+j+i).style.background='#adfaff';
+						document.getElementById('b'+j+i).innerHTML="X";
 					}
 				}
 			}
@@ -221,14 +225,18 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 			tBoard = tBoard1;
 			for (i = 0; i < cols; i++) {
 				for (j = 0; j < rows; j++) {
+					document.getElementById('b'+j+i).innerHTML="";
+					document.getElementById('b'+j+i).style.background='#adfaff';
 					if(tBoard[j][i]==3){
 						document.getElementById('b'+j+i).style.background='#ffffff';
 					} 	
 					else if(tBoard[j][i]==2){
 						document.getElementById('b'+j+i).style.background='#f43d3d';
+						document.getElementById('b'+j+i).innerHTML="X";
 					}
-					else{
+					else if(tBoard[j][i]==1){
 						document.getElementById('b'+j+i).style.background='#adfaff';
+						document.getElementById('b'+j+i).innerHTML="X";
 					}
 				}
 			}
@@ -265,7 +273,16 @@ function makeMove(e) {
 			e.target.style.background = '#f43d3d';
 			// set this square's value to 2 to indicate the ship has been hit
 			tBoard[row][col] = 2;
-			
+					setTimeout(function() {
+			if (window.confirm('Next player ready?'))
+			{
+				turn=turn+1;
+				turn = turn%2;
+				alert(turn);
+				switchBoard();
+			}
+		}, 1000);
+		
 			// increment hitCount each time a ship is hit
 			hitCount++;
 
@@ -275,20 +292,18 @@ function makeMove(e) {
 			}
 			
 		// if player clicks a square that's been previously hit, let them know
-		} else if (tBoard[row][col] > 1) {
+		} /*else if (tBoard[row][col] > 1) {
 			alert("Stop wasting your torpedos! You already fired at this location.");
-		}		
+		}	*/	
 		
 		setTimeout(function() {
 			if (window.confirm('Next player ready?'))
-				{
-
-					turn=turn+1;
-					turn = turn%2;
-					alert(turn);
-					switchBoard();
-					//document.getElementById("grid1").addEventListener("mousemove", switchBoard, false);
-				}
+			{
+				turn=turn+1;
+				turn = turn%2;
+				alert(turn);
+				switchBoard();
+			}
 		}, 1000);
     }
     e.stopPropagation();
@@ -296,38 +311,5 @@ function makeMove(e) {
 	
 }
 
-/*function makeMove2(e) {
-    // if item clicked (e.target) is not the parent element on which the event listener was set (e.currentTarget)
-	if (e.target !== e.currentTarget) {
-        // extract row and column # from the HTML element's id
-		var row = e.target.id.substring(1,2);
-		var col = e.target.id.substring(2,3);
-        //alert("Clicked on row " + row + ", col " + col);
-				
-		// if player clicks a square with no ship, change the color and change square's value
-		if (gameBoard2[row][col] == 0) {
-			e.target.style.background = '#cf76f2';
-			// set this square's value to 3 to indicate that they fired and missed
-			gameBoard2[row][col] = 3;
-			
-		// if player clicks a square with a ship, change the color and change square's value
-		} else if (gameBoard2[row][col] == 1) {
-			e.target.style.background = '#f43d3d';
-			// set this square's value to 2 to indicate the ship has been hit
-			gameBoard2[row][col] = 2;
-			
-			// increment hitCount each time a ship is hit
-			hitCount++;
-			// this definitely shouldn't be hard-coded, but here it is anyway. lazy, simple solution:
-			if (hitCount == 17) {
-				alert("All enemy battleships have been defeated! You win!");
-			}
-			
-		// if player clicks a square that's been previously hit, let them know
-		} else if (gameBoard2[row][col] > 1) {
-			alert("Stop wasting your torpedos! You already fired at this location.");
-		}		
-    }
-    e.stopPropagation();
-}*/
+
 
