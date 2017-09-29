@@ -3,28 +3,42 @@ var rows = 10;
 var cols = 10;
 var squareSize = 50;
 var gridnum=1;
-var clicked=0;
 var turn=1;
 
 //var reg = /^(?:([ABS])(?::|(\())\s*([A-J])(\d|10)\s*-\s*(?:(?:\3(?:\d|10))|(?:[A-J]\4))(?(2)\))\s*;\s*)(?:([ABS])(?::|(\())\s*([A-J])(\d|10)\s*-\s*(?:(?:\7(?:\d|10))|(?:[A-J]\8))(?(6)\))\s*;\s*)(?:([ABS])(?::|(\())\s*([A-J])(\d|10)\s*-\s*(?:(?:\11(?:\d|10))|(?:[A-J]\12))(?(6)\))\s*);*/g;
-var regA = /((A\s*:\s*)|(A\s*\(\s*))[A-J](\d|10)\s*-\s*[A-J](\d|10)\)*/g;
+var regA = /((A\s*:\s*)|(A\s*\(\s*))[A-J](\d|10)\s*-\s*[A-J](\d|10)\)*/;
+var regB = /((B\s*:\s*)|(B\s*\(\s*))[A-J](\d|10)\s*-\s*[A-J](\d|10)\)*/;
+var regS = /((S\s*:\s*)|(S\s*\(\s*))[A-J](\d|10)\s*-\s*[A-J](\d|10)\)*/;
 var pos = /[A-J](\d|10)\s*/g;
 var letter = /[A-J]/g; 
 var PBtn = document.getElementById("PBtn");
 
 var Player1={
-	name: "",
-	AShip: 5,
-	BShip: 4,
-	SShip: 3
+	'name': "",
+	'Alength': 5,
+	'Blength': 4,
+	'Slength': 3,
+	'AStart': "",
+	'BStart': "",
+	'SStart': "",
+	'AEnd': "",
+	'BEnd': "",
+	'SEnd': ""
 };
 
 var Player2={
-	name: "",
-	AShip: 5,
-	BShip: 4,
-	SShip: 3
+	'name': "",
+	'Alength': 5,
+	'Blength': 4,
+	'Slength': 3,
+	'AStart': "",
+	'BStart': "",
+	'SStart': "",
+	'AEnd': "",
+	'BEnd': "",
+	'SEnd': ""
 };
+
 
 var tBoard1 = [
 				[0,0,0,0,0,0,0,0,0,0],
@@ -53,60 +67,218 @@ var tBoard2 = [
 				]
 
 
-
-if(clicked==0){
-	if (PBtn.addEventListener){
-		PBtn.addEventListener("click", P1Button, false);
-	}
-	else if (PBtn.attachEvent){
-		PBtn.attachEvent('onclick', P1Button);
-	}
-}
+document.getElementById("PBtn").addEventListener("click", P1Button, false);
 
 function P1Button(){
-	var P1Name=document.getElementById("PName").value;
+	var valid = false;
+	Player1.name=document.getElementById("PName").value;
 	var P1Ships=document.getElementById("PShips").value;
-	var found = P1Ships.search(reg);
-	if(found==-1){
+	var foundA = P1Ships.search(/((A\s*:\s*)|(A\s*\(\s*))([A-J])(\d|10)\s*-\s*([A-J])(\d|10)\)*/);
+	var foundB = P1Ships.search(/((B\s*:\s*)|(B\s*\(\s*))([A-J])(\d|10)\s*-\s*([A-J])(\d|10)\)*/);
+	var foundS = P1Ships.search(/((S\s*:\s*)|(S\s*\(\s*))([A-J])(\d|10)\s*-\s*([A-J])(\d|10)\)*/);
+	if(foundA==-1 || foundB==-1 || foundS==-1){
 		alert("Ship location format is invalid. Please enter a valid location");
 	}
-	
-	/*else if(found!=-1 && clicked<1){
-		alert("hi");
-	}*/
+	else if(Player1.name ==""){
+		alert("Please enter a name");
+	}
 	else{
+		foundA = /((A\s*:\s*)|(A\s*\(\s*))([A-J](\d|10))\s*-\s*([A-J](\d|10))\)*/.exec(P1Ships);
+		var startLetter = getCoord(foundA[4].charAt(0));
+		var endLetter = getCoord(foundA[6].charAt(0));
+		if((startLetter==endLetter) || (foundA[4].charAt(1)==foundA[6].charAt(1))){
+			if( ((startLetter+Player1.Alength-1)==endLetter) || (parseInt(foundA[4].charAt(1))+Player1.Alength-1)==parseInt(foundA[6].charAt(1))){
+				alert("Valid");
+				valid = true;
+				Player1.AStart = foundA[4];
+				Player1.AEnd = foundA[6];
+			}
+			else{
+				alert("Length of ship is not valid");
+				valid = false;
+			}
+		}
+		else{
+			alert("Not a valid location");
+			valid = false;
+		}
+		
+		foundB = /((B\s*:\s*)|(B\s*\(\s*))([A-J](\d|10))\s*-\s*([A-J](\d|10))\)*/.exec(P1Ships);
+		var startLetter = getCoord(foundB[4].charAt(0));
+		var endLetter = getCoord(foundB[6].charAt(0));
+		if((startLetter==endLetter) || (foundB[4].charAt(1)==foundB[6].charAt(1))){
+			if( ((startLetter+Player1.Blength-1)==endLetter) || (parseInt(foundB[4].charAt(1))+Player1.Blength-1)==parseInt(foundB[6].charAt(1))){
+				alert("Valid");
+				valid = true;
+				Player1.BStart = foundB[4];
+				Player1.BEnd = foundB[6];
+			}
+			else{
+				alert("Length of ship B is not valid");
+				valid = false;
+			}
+		}
+		else{
+			alert("Not a valid location");
+			valid = false;
+		}
+		
+		foundS = /((S\s*:\s*)|(S\s*\(\s*))([A-J](\d|10))\s*-\s*([A-J](\d|10))\)*/.exec(P1Ships);
+		var startLetter = getCoord(foundS[4].charAt(0));
+		var endLetter = getCoord(foundS[6].charAt(0));
+		if((startLetter==endLetter) || (foundS[4].charAt(1)==foundS[6].charAt(1))){
+			if( ((startLetter+Player1.Slength-1)==endLetter) || (parseInt(foundS[4].charAt(1))+Player1.Slength-1)==parseInt(foundS[6].charAt(1))){
+				alert("Valid");
+				valid = true;
+				Player1.SStart = foundS[4];
+				Player1.SEnd = foundS[6];
+			}
+			else{
+				alert("Length of ship S is not valid");
+				valid = false;
+			}
+		}
+		else{
+			alert("Not a valid location");
+			valid = false;
+		}
+	}
+	if(valid){
 		var player=document.getElementById("Player").innerHTML="Player 2";
 		var p2=document.getElementById("Player").style.color="#d31323";
 		//var PName=document.getElementById("PName").value="";
 		//var PShips=document.getElementById("PShips").value="";
 		
-		clicked=1;
-			
-		if (PBtn.addEventListener){
-			PBtn.addEventListener("click", P2Button, false);
-		}
-		else if (PBtn.attachEvent){
-			PBtn.attachEvent('onclick', P2Button);
-		}		
+		document.getElementById("PBtn").removeEventListener('click', P1Button, false);
+		document.getElementById("PBtn").addEventListener("click", P2Button, false);	
 	}
 }
 
 		
 function P2Button(){
-	var P2Name=document.getElementById("PName").value;
+	var valid = false;
+	Player2.name=document.getElementById("PName").value;
+	alert(Player2.name);
 	var P2Ships=document.getElementById("PShips").value;
-	var found = P2Ships.search(reg);
-	if(found==-1){
-		alert("Ship location invalid. Please enter a valid location");
+	var foundA = P2Ships.search(/((A\s*:\s*)|(A\s*\(\s*))([A-J])(\d|10)\s*-\s*([A-J])(\d|10)\)*/);
+	var foundB = P2Ships.search(/((B\s*:\s*)|(B\s*\(\s*))([A-J])(\d|10)\s*-\s*([A-J])(\d|10)\)*/);
+	var foundS = P2Ships.search(/((S\s*:\s*)|(S\s*\(\s*))([A-J])(\d|10)\s*-\s*([A-J])(\d|10)\)*/);
+	if(foundA==-1 || foundB==-1 || foundS==-1){
+		alert("Ship location format is invalid. Please enter a valid location");
+	}
+	else if(Player2.name ==""){
+		alert("Please enter a name");
 	}
 	else{
-		PBtn.disabled=true;
+		foundA = /((A\s*:\s*)|(A\s*\(\s*))([A-J](\d|10))\s*-\s*([A-J](\d|10))\)*/.exec(P2Ships);
+		var startLetter = getCoord(foundA[4].charAt(0));
+		var endLetter = getCoord(foundA[6].charAt(0));
+		if((startLetter==endLetter) || (foundA[4].charAt(1)==foundA[6].charAt(1))){
+			if( ((startLetter+Player2.Alength-1)==endLetter) || (parseInt(foundA[4].charAt(1))+Player2.Alength-1)==parseInt(foundA[6].charAt(1))){
+				alert("Valid");
+				valid = true;
+				Player2.AStart = foundA[4];
+				Player2.AEnd = foundA[6];
+			}
+			else{
+				alert("Length of ship is not valid");
+				valid = false;
+			}
+		}
+		else{
+			alert("Not a valid location");
+			valid = false;
+		}
+		
+		foundB = /((B\s*:\s*)|(B\s*\(\s*))([A-J](\d|10))\s*-\s*([A-J](\d|10))\)*/.exec(P2Ships);
+		var startLetter = getCoord(foundB[4].charAt(0));
+		var endLetter = getCoord(foundB[6].charAt(0));
+		if((startLetter==endLetter) || (foundB[4].charAt(1)==foundB[6].charAt(1))){
+			if( ((startLetter+Player2.Blength-1)==endLetter) || (parseInt(foundB[4].charAt(1))+Player2.Blength-1)==parseInt(foundB[6].charAt(1))){
+				alert("Valid");
+				valid = true;
+				Player2.BStart = foundB[4];
+				Player2.BEnd = foundB[6];
+			}
+			else{
+				alert("Length of ship B is not valid");
+				valid = false;
+			}
+		}
+		else{
+			alert("Not a valid location");
+			valid = false;
+		}
+		
+		foundS = /((S\s*:\s*)|(S\s*\(\s*))([A-J](\d|10))\s*-\s*([A-J](\d|10))\)*/.exec(P2Ships);
+		var startLetter = getCoord(foundS[4].charAt(0));
+		var endLetter = getCoord(foundS[6].charAt(0));
+		if((startLetter==endLetter) || (foundS[4].charAt(1)==foundS[6].charAt(1))){
+			if( ((startLetter+Player2.Slength-1)==endLetter) || (parseInt(foundS[4].charAt(1))+Player2.Slength-1)==parseInt(foundS[6].charAt(1))){
+				alert("Valid");
+				valid = true;
+				Player2.SStart = foundS[4];
+				Player2.SEnd = foundS[6];
+			}
+			else{
+				alert("Length of ship S is not valid");
+				valid = false;
+			}
+		}
+		else{
+			alert("Not a valid location");
+			valid = false;
+		}
 	}
+	if(valid){
+		PBtn.disabled=true;
+		document.getElementById("PBtn").removeEventListener('click', P2Button, false);
+		alert("Click ok to begin " + Player1.name + "'s turn");
+		initialize();
+	}
+
 }
 
+function getCoord(letter){
+	switch(letter){
+		case "A": 
+			return 0;
+			break;
+		case "B": 
+			return 1;
+			break;
+		case "C": 
+			return 2;
+			break;
+		case "D": 
+			return 3;
+			break;
+		case "E": 
+			return 4;
+			break;
+		case "F": 
+			return 5;
+			break;
+		case "G": 
+			return 6;
+			break;
+		case "H": 
+			return 7;
+			break;
+		case "I": 
+			return 8;
+			break;
+		case "J": 
+			return 9;
+			break;
+	}
+}
 // get the container element
 
-	
+function initialize(){	
+
+	var t = document.getElementById("tletters").innerHTML="A&emsp;&emsp; B&emsp;&emsp;C&emsp;&emsp;D&emsp;&emsp;E&emsp;&emsp;F&emsp;&emsp;G&emsp;&emsp;H&emsp;&emsp;I&emsp;&emsp;J";
+	var b = document.getElementById("bletters").innerHTML="A&emsp;&emsp; B&emsp;&emsp;C&emsp;&emsp;D&emsp;&emsp;E&emsp;&emsp;F&emsp;&emsp;G&emsp;&emsp;H&emsp;&emsp;I&emsp;&emsp;J";
 	// Top board
 	for (i = 0; i < cols; i++) {
 		for (j = 0; j < rows; j++) {
@@ -156,10 +328,17 @@ function P2Button(){
 			}			
 		}
 	}
-
-document.getElementById("topPlayer").innerHTML="Player 2 (Opponent's Board)";
-document.getElementById("bottomPlayer").innerHTML="Player 1's Ships";
-
+	
+	for (i = 0; i < cols; i++) {
+		for (j = 0; j < rows; j++) {
+			
+		}
+	}
+	document.getElementById("topPlayer").innerHTML="Player 2 (Opponent's Board)";
+	document.getElementById("bottomPlayer").innerHTML="Player 1's Ships";
+	
+	
+}
 
 // set event listener for all elements in gameboard, run fireTorpedo function when square is clicked
 document.getElementById("grid1").addEventListener("click", makeMove, false);
