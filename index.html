@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Battleship!</title>
+	<meta charset="utf-8">
+	<meta name="description" content="You Sunk My Battleship">
+	<meta name="author" content="Tammy Ma">
+	
+	<link rel="icon" href="Ship-512.png">
+	<link rel="stylesheet" href="battleship-style.css">
+
+</head>
+
+<body>
+	<div class="input">
+		<h1 id="title">Battleship!</h1>
+		<h2 id="Player">Player 1</h2>
+		<h3>Enter your name:</h3>
+			<div>
+				<input type="text" id="PName" placeholder="e.g. Tammy" />
+			</div>
+		<h3>Enter your ships:</h3>
+			<div>
+				<input type="text" id="PShips" placeholder="e.g. A:A1-A5;B:B6-E6;S:H3-J3" /><br />
+				<button Id="PBtn">Enter</button>
+			</div> <br /><br />
+			
+		<h2 id="topPlayer"></h2>
+		<div class="container">
+			<h3 class="letters">A&emsp;&emsp; B&emsp;&emsp;C&emsp;&emsp;D&emsp;&emsp;E&emsp;&emsp;F&emsp;&emsp;G&emsp;&emsp;H&emsp;&emsp;I&emsp;&emsp;J</h3>
+			<div id="grid1" class="grid">
+			<!--<h3 id="numbers">1<br />2<br />3</h3>-->.
+			</div> <br /> <br />
+		</div>
+		
+		<h2 id="bottomPlayer"></h2>
+		<h3 class="letters">A&emsp;&emsp; B&emsp;&emsp;C&emsp;&emsp;D&emsp;&emsp;E&emsp;&emsp;F&emsp;&emsp;G&emsp;&emsp;H&emsp;&emsp;I&emsp;&emsp;J</h3>
+		<div id="grid2" class="grid">
+		</div> <br /> <br />
+	</div>
+
+
+
+	<script type="text/javascript" src="battleship1.js">	</script>
+</body>
+
+</html>
