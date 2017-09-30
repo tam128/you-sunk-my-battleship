@@ -236,6 +236,8 @@ function P2Button(){
 	}
 	if(validA && validB && validS){
 		PBtn.disabled=true;
+		document.getElementById("PName").value="";
+		document.getElementById("PShips").value="";
 		document.getElementById("PBtn").removeEventListener('click', P2Button, false);
 		alert("Click ok to begin " + Player1.name + "'s turn");
 		initialize();
@@ -247,7 +249,7 @@ function populateBoard(rowStart, rowEnd, colStart, colEnd, ship, tBoard){
 	if(tBoard==1){
 		tBoard = tBoard1;
 	}
-	else{
+	else if(tBoard==2){
 		tBoard = tBoard2;
 	}
 	for(i=colStart; i<=colEnd; i++){
@@ -371,6 +373,7 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 			alert("Click OK to begin " + Player2.name + "'s turn");
 			document.getElementById("topPlayer").innerHTML= Player1.name + " (" + Player2.name + "'s Target)";
 			document.getElementById("bottomPlayer").innerHTML= Player2.name +"'s Ships";
+			//Player 2's ships are on the bottom
 			tBoard = tBoard2;
 			for (i = 0; i < cols; i++) {
 				for (j = 0; j < rows; j++) {
@@ -383,13 +386,24 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 						document.getElementById('b'+j+i).style.background='#f43d3d';
 						document.getElementById('b'+j+i).innerHTML="X";
 					}
-					else if(tBoard[j][i]==1){
+					//mark the bottom ship locations for Player2
+					else if(tBoard[j][i]=="A"){
+						document.getElementById('b'+j+i).innerHTML = 'A';
 						document.getElementById('b'+j+i).style.background='#adfaff';
-						document.getElementById('b'+j+i).innerHTML="X";
+					}			
+					else if(tBoard[j][i]=="B"){
+						document.getElementById('b'+j+i).innerHTML = 'B';
+						document.getElementById('b'+j+i).style.background='#adfaff';
+					}
+					else if(tBoard[j][i]=="S"){
+						document.getElementById('b'+j+i).innerHTML = 'S';
+						document.getElementById('b'+j+i).style.background='#adfaff';
 					}
 				}
 			}
 			
+
+			//add colors showing Player2's hits and misses on Player1's board (top)
 			tBoard = tBoard1;
 			for (i = 0; i < cols; i++) {
 				for (j = 0; j < rows; j++) {
@@ -405,11 +419,15 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 				}
 			}
 			document.getElementById("grid1").addEventListener("click", makeMove, false);
+			
+			
 		}
 		else{
 			alert("Click OK to begin " + Player1.name + "'s turn");
 			document.getElementById("topPlayer").innerHTML=Player2.name + " (" + Player1.name + "'s Target)";
 			document.getElementById("bottomPlayer").innerHTML=Player1.name +"'s Ships";
+			
+			//add colors showing Player1's hits and misses on Player2's board (top)
 			tBoard = tBoard2;
 			for (i = 0; i < cols; i++) {
 				for (j = 0; j < rows; j++) {
@@ -425,6 +443,7 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 				}
 			}
 			
+			//Player 1's ships are on the bottom
 			tBoard = tBoard1;
 			for (i = 0; i < cols; i++) {
 				for (j = 0; j < rows; j++) {
@@ -437,12 +456,22 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 						document.getElementById('b'+j+i).style.background='#f43d3d';
 						document.getElementById('b'+j+i).innerHTML="X";
 					}
-					else if(tBoard[j][i]==1){
+					//mark the bottom ship locations for Player1
+					else if(tBoard[j][i]=="A"){
+						document.getElementById('b'+j+i).innerHTML = 'A';
 						document.getElementById('b'+j+i).style.background='#adfaff';
-						document.getElementById('b'+j+i).innerHTML="X";
+					}			
+					else if(tBoard[j][i]=="B"){
+						document.getElementById('b'+j+i).innerHTML = 'B';
+						document.getElementById('b'+j+i).style.background='#adfaff';
+					}
+					else if(tBoard[j][i]=="S"){
+						document.getElementById('b'+j+i).innerHTML = 'S';
+						document.getElementById('b'+j+i).style.background='#adfaff';
 					}
 				}
 			}
+			
 			document.getElementById("grid1").addEventListener("click", makeMove, false);
 		}
 	}
@@ -451,12 +480,13 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 
 
 function makeMove(e) {
-	alert("hi");
 	if(turn==1){
 		var tBoard = tBoard2;
+		var player = Player1;
 	}
 	else {
 		var tBoard = tBoard1;
+		var player = Player2;
 	}
     // if item clicked (e.target) is not the parent element on which the event listener was set (e.currentTarget)
 	if (e.target !== e.currentTarget) {
@@ -467,50 +497,42 @@ function makeMove(e) {
 				
 		// if player clicks a square with no ship, change the color and change square's value
 		if (tBoard[row][col] == 0) {
-			e.target.style.background = '#cf76f2';
+			e.target.style.background = '#ffffff';
 			// set this square's value to 3 to indicate that they fired and missed
 			tBoard[row][col] = 3;
 			
+			setTimeout(function() {
+				if (window.confirm("Shot missed"))
+				{
+					turn=turn+1;
+					turn = turn%2;
+					switchBoard();
+				}
+			}, 1000);
+			
 		// if player clicks a square with a ship, change the color and change square's value
-		} else if (tBoard[row][col] == 1) {
+		} else if (tBoard[row][col] == "A" || tBoard[row][col] == "B" || tBoard[row][col] == "S" ) {
 			e.target.style.background = '#f43d3d';
 			// set this square's value to 2 to indicate the ship has been hit
 			tBoard[row][col] = 2;
-					setTimeout(function() {
-			if (window.confirm('Next player ready?'))
-			{
-				turn=turn+1;
-				turn = turn%2;
-				//alert(turn);
-				switchBoard();
-			}
-		}, 1000);
-		
+			
+			setTimeout(function() {
+				if (window.confirm("You got a hit!"))
+				{
+					turn=turn+1;
+					turn = turn%2;
+					switchBoard();
+				}
+			}, 1000);
+			
 			// increment hitCount each time a ship is hit
 			hitCount++;
-
-			// this definitely shouldn't be hard-coded, but here it is anyway. lazy, simple solution:
 			if (hitCount == 17) {
 				alert("All enemy battleships have been defeated! You win!");
 			}
-			
-		// if player clicks a square that's been previously hit, let them know
-		} /*else if (tBoard[row][col] > 1) {
-			alert("Stop wasting your torpedos! You already fired at this location.");
-		}	*/	
-		
-		/*setTimeout(function() {
-			if (window.confirm('Next player ready?'))
-			{
-				turn=turn+1;
-				turn = turn%2;
-				//alert(turn);
-				switchBoard();
-			}
-		}, 1000);*/
+		}	
     }
     e.stopPropagation();
-	
 	
 }
 
