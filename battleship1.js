@@ -1,9 +1,9 @@
-// set grid rows and columns and the size of each square
 var rows = 10;
 var cols = 10;
 var squareSize = 50;
 var gridnum=1;
 var turn=1;
+
 
 //var reg = /^(?:([ABS])(?::|(\())\s*([A-J])(\d|10)\s*-\s*(?:(?:\3(?:\d|10))|(?:[A-J]\4))(?(2)\))\s*;\s*)(?:([ABS])(?::|(\())\s*([A-J])(\d|10)\s*-\s*(?:(?:\7(?:\d|10))|(?:[A-J]\8))(?(6)\))\s*;\s*)(?:([ABS])(?::|(\())\s*([A-J])(\d|10)\s*-\s*(?:(?:\11(?:\d|10))|(?:[A-J]\12))(?(6)\))\s*);*/g;
 var PBtn = document.getElementById("PBtn");
@@ -18,7 +18,11 @@ var Player1={
 	'SStart': "",
 	'AEnd': "",
 	'BEnd': "",
-	'SEnd': ""
+	'SEnd': "",
+	'AisSunk':"",
+	'BisSunk':"",
+	'SisSunk':"",
+	'hits': 0
 };
 
 var Player2={
@@ -31,7 +35,11 @@ var Player2={
 	'SStart': "",
 	'AEnd': "",
 	'BEnd': "",
-	'SEnd': ""
+	'SEnd': "",
+	'AisSunk':"",
+	'BisSunk':"",
+	'SisSunk':"",
+	'hits': 0
 };
 
 
@@ -64,16 +72,8 @@ var tBoard2 = [
 
 document.getElementById("PBtn").addEventListener("click", P1Button, false);
 
-function clearBoard(tBoard){
-	
-	if(tBoard==1){
-		tBoard=tBoard1;
-	}
-	else if(tBoard==2){
-		tBoard=tBoard2;
-	}
-	
-	tBoard = [
+function clearBoard(){
+	tBoard1= [
 				[0,0,0,0,0,0,0,0,0,0],
 				[0,0,0,0,0,0,0,0,0,0],
 				[0,0,0,0,0,0,0,0,0,0],
@@ -114,8 +114,9 @@ function P1Button(){
 				Player1.AEnd = foundA[6];
 				var nOverlap = populateBoard(parseInt(foundA[4].charAt(1))-1, parseInt(foundA[6].charAt(1))-1, startLetter, endLetter, "A", 1);
 				if(nOverlap==false){
-					alert("Ship locations overlap");
+					alert("1Ship locations overlap");
 					clearBoard(1);
+					validA = false;
 				}
 			}
 			else{
@@ -133,14 +134,14 @@ function P1Button(){
 		var endLetter = getCoord(foundB[6].charAt(0));
 		if((startLetter==endLetter) || (foundB[4].charAt(1)==foundB[6].charAt(1))){
 			if( ((startLetter+Player1.Blength-1)==endLetter) || (parseInt(foundB[4].charAt(1))+Player1.Blength-1)==parseInt(foundB[6].charAt(1))){
-				//alert("Valid");
 				validB = true;
 				Player1.BStart = foundB[4];
 				Player1.BEnd = foundB[6];
 				var nOverlap = populateBoard(parseInt(foundB[4].charAt(1))-1, parseInt(foundB[6].charAt(1))-1, startLetter, endLetter, "B", 1);
 				if(nOverlap==false){
-					alert("Ship locations overlap");
+					alert("2Ship locations overlap");
 					clearBoard(1);
+					validB = false;
 				}
 				
 			}
@@ -159,14 +160,14 @@ function P1Button(){
 		var endLetter = getCoord(foundS[6].charAt(0));
 		if((startLetter==endLetter) || (foundS[4].charAt(1)==foundS[6].charAt(1))){
 			if( ((startLetter+Player1.Slength-1)==endLetter) || (parseInt(foundS[4].charAt(1))+Player1.Slength-1)==parseInt(foundS[6].charAt(1))){
-				//alert("Valid");
 				validS = true;
 				Player1.SStart = foundS[4];
 				Player1.SEnd = foundS[6];
 				var nOverlap = populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 1);
 				if(nOverlap==false){
-					alert("Ship locations overlap");
+					//alert("3Ship locations overlap");
 					clearBoard(1);
+					validS = false;
 				}
 			}
 			else{
@@ -182,8 +183,6 @@ function P1Button(){
 	if(validA && validB && validS){
 		var player=document.getElementById("Player").innerHTML="Player 2";
 		var p2=document.getElementById("Player").style.color="#d31323";
-		//var PName=document.getElementById("PName").value="";
-		//var PShips=document.getElementById("PShips").value="";
 		
 		document.getElementById("PBtn").removeEventListener('click', P1Button, false);
 		document.getElementById("PBtn").addEventListener("click", P2Button, false);	
@@ -212,7 +211,6 @@ function P2Button(){
 		var endLetter = getCoord(foundA[6].charAt(0));
 		if((startLetter==endLetter) || (foundA[4].charAt(1)==foundA[6].charAt(1))){
 			if( ((startLetter+Player2.Alength-1)==endLetter) || (parseInt(foundA[4].charAt(1))+Player2.Alength-1)==parseInt(foundA[6].charAt(1))){
-				//alert("Valid");
 				validA = true;
 				Player2.AStart = foundA[4];
 				Player2.AEnd = foundA[6];
@@ -220,6 +218,7 @@ function P2Button(){
 				if(nOverlap==false){
 					alert("Ship locations overlap");
 					clearBoard(2);
+					validA = false;
 				}
 			}
 			else{
@@ -245,6 +244,7 @@ function P2Button(){
 				if(nOverlap==false){
 					alert("Ship locations overlap");
 					clearBoard(2);
+					validB = false;
 				}
 			}
 			else{
@@ -266,10 +266,11 @@ function P2Button(){
 				validS = true;
 				Player2.SStart = foundS[4];
 				Player2.SEnd = foundS[6];
-				var nOverlap = populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 2);
+				nOverlap = populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 2);
 				if(nOverlap==false){
 					alert("Ship locations overlap");
 					clearBoard(2);
+					validS = false;
 				}
 			}
 			else{
@@ -294,22 +295,24 @@ function P2Button(){
 }
 
 function populateBoard(rowStart, rowEnd, colStart, colEnd, ship, tBoard){
+	var board;
 	if(tBoard==1){
-		tBoard = tBoard1;
+		board = tBoard1;
 	}
 	else if(tBoard==2){
-		tBoard = tBoard2;
+		board = tBoard2;
 	}
 	for(i=colStart; i<=colEnd; i++){
 		for(j=rowStart; j<=rowEnd; j++){
-			if(tBoard[j][i]==0){
-				tBoard[j][i]=ship;
+			if(board[j][i]==0){
+				board[j][i]=ship;
 			}
 			else{
 				return false;
 			}
 		}
 	}
+	return true;
 }
 
 function getCoord(letter){
@@ -346,7 +349,6 @@ function getCoord(letter){
 			break;
 	}
 }
-// get the container element
 
 function initialize(){	
 
@@ -356,18 +358,14 @@ function initialize(){
 	for (i = 0; i < cols; i++) {
 		for (j = 0; j < rows; j++) {
 			
-			// create a new div HTML element for each grid square and make it the right size
 			var square = document.createElement("div");
 			grid1.appendChild(square);
 
-		// give each div element a unique id based on its row and column, like "s00"
 			square.id = 't' + j + i;			
 			
-			// set each grid square's coordinates: multiples of the current row or column number
 			var topPosition = j * squareSize;
 			var leftPosition = i * squareSize;			
-			
-			// use CSS absolute positioning to place each grid square on the page
+
 			square.style.top = topPosition + 'px';
 			square.style.left = leftPosition + 'px';						
 		}
@@ -377,20 +375,14 @@ function initialize(){
 	for (i = 0; i < cols; i++) {
 		for (j = 0; j < rows; j++) {
 			
-			// create a new div HTML element for each grid square and make it the right size
 			var square = document.createElement("div");
 			grid2.appendChild(square);
-
-		// give each div element a unique id based on its row and column, like "s00"
 			square.id = 'b' + j + i;			
-			//var x = document.getElementByID("container").createElement("label");
-			//container.appendChild(x);
 			
-			// set each grid square's coordinates: multiples of the current row or column number
 			var topPosition = j * squareSize;
 			var leftPosition = i * squareSize;			
 			
-			// use CSS absolute positioning to place each grid square on the page
+
 			square.style.top = topPosition + 'px';
 			square.style.left = leftPosition + 'px';	
 			
@@ -526,26 +518,25 @@ document.getElementById("grid1").addEventListener("click", makeMove, false);
 
 
 
-function makeMove(e) {
+function makeMove(e) {	
 	if(turn==1){
 		var tBoard = tBoard2;
 		var player = Player1;
+		var opp = Player2;
 	}
 	else {
 		var tBoard = tBoard1;
 		var player = Player2;
+		var opp = Player1;
 	}
-    // if item clicked (e.target) is not the parent element on which the event listener was set (e.currentTarget)
+    
 	if (e.target !== e.currentTarget) {
-        // extract row and column # from the HTML element's id
+
 		var row = e.target.id.substring(1,2);
 		var col = e.target.id.substring(2,3);
-        //alert("Clicked on row " + row + ", col " + col);
-				
-		// if player clicks a square with no ship, change the color and change square's value
+		
 		if (tBoard[row][col] == 0) {
 			e.target.style.background = '#ffffff';
-			// set this square's value to 3 to indicate that they fired and missed
 			tBoard[row][col] = 3;
 			
 			setTimeout(function() {
@@ -557,26 +548,49 @@ function makeMove(e) {
 				}
 			}, 1000);
 			
-		// if player clicks a square with a ship, change the color and change square's value
 		} else if (tBoard[row][col] == "A" || tBoard[row][col] == "B" || tBoard[row][col] == "S" ) {
+			if(tBoard[row][col] == "A"){
+				opp.Alength=opp.Alength-1;
+				opp.hits++;
+			}
+			else if(tBoard[row][col] == "B"){
+				opp.Blength=opp.Blength-1;
+				opp.hits++;
+			}
+			else if(tBoard[row][col] == "S"){
+				opp.Slength=opp.Slength-1;
+				alert(opp.Slength);
+				opp.hits++;
+			}
+			
 			e.target.style.background = '#f43d3d';
-			// set this square's value to 2 to indicate the ship has been hit
+
 			tBoard[row][col] = 2;
 			
 			setTimeout(function() {
-				if (window.confirm("You got a hit!"))
-				{
-					turn=turn+1;
-					turn = turn%2;
-					switchBoard();
+				alert("You got a hit!");
+				if(opp.Alength==0 && !opp.AisSunk.equals("t")){
+					alert(player.name + " has sunk " + opp.name + "'s aircraft carrier!");
+					opp.AisSunk = "t";
 				}
+				else if(opp.Blength==0 && !opp.BisSunk.equals("t")){
+					alert(player.name + " has sunk " + opp.name + "'s battleship!");
+					opp.BisSunk = "t";
+				}
+				else if(opp.Slength==0 && !opp.SisSunk.equals("t")){
+					alert(player.name + " has sunk " + opp.name + "'s submarine!");
+					opp.SisSunk = "t";
+				}
+				
+				if(opp.Alength==0 && opp.Blength==0 && opp.Slength==0){
+					var score = 24-2*(player.hits);
+					alert(player.name + " has sunk all of " + opp.name + "'s ships! \nWinning score is " + score);
+				}
+				
+				turn=turn+1;
+				turn = turn%2;
+				switchBoard();
 			}, 1000);
-			
-			// increment hitCount each time a ship is hit
-			hitCount++;
-			if (hitCount == 17) {
-				alert("All enemy battleships have been defeated! You win!");
-			}
 		}	
     }
     e.stopPropagation();
