@@ -64,6 +64,29 @@ var tBoard2 = [
 
 document.getElementById("PBtn").addEventListener("click", P1Button, false);
 
+function clearBoard(tBoard){
+	
+	if(tBoard==1){
+		tBoard=tBoard1;
+	}
+	else if(tBoard==2){
+		tBoard=tBoard2;
+	}
+	
+	tBoard = [
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0],
+				[0,0,0,0,0,0,0,0,0,0]
+				]
+}
+
 function P1Button(){
 	var validA = false;
 	var validB = false;
@@ -89,7 +112,11 @@ function P1Button(){
 				validA = true;
 				Player1.AStart = foundA[4];
 				Player1.AEnd = foundA[6];
-				populateBoard(parseInt(foundA[4].charAt(1))-1, parseInt(foundA[6].charAt(1))-1, startLetter, endLetter, "A", 1);
+				var nOverlap = populateBoard(parseInt(foundA[4].charAt(1))-1, parseInt(foundA[6].charAt(1))-1, startLetter, endLetter, "A", 1);
+				if(nOverlap==false){
+					alert("Ship locations overlap");
+					clearBoard(1);
+				}
 			}
 			else{
 				alert("Length of ship is not valid");
@@ -110,7 +137,12 @@ function P1Button(){
 				validB = true;
 				Player1.BStart = foundB[4];
 				Player1.BEnd = foundB[6];
-				populateBoard(parseInt(foundB[4].charAt(1))-1, parseInt(foundB[6].charAt(1))-1, startLetter, endLetter, "B", 1);
+				var nOverlap = populateBoard(parseInt(foundB[4].charAt(1))-1, parseInt(foundB[6].charAt(1))-1, startLetter, endLetter, "B", 1);
+				if(nOverlap==false){
+					alert("Ship locations overlap");
+					clearBoard(1);
+				}
+				
 			}
 			else{
 				alert("Length of ship B is not valid");
@@ -131,7 +163,11 @@ function P1Button(){
 				validS = true;
 				Player1.SStart = foundS[4];
 				Player1.SEnd = foundS[6];
-				populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 1);
+				var nOverlap = populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 1);
+				if(nOverlap==false){
+					alert("Ship locations overlap");
+					clearBoard(1);
+				}
 			}
 			else{
 				alert("Length of ship S is not valid");
@@ -180,7 +216,11 @@ function P2Button(){
 				validA = true;
 				Player2.AStart = foundA[4];
 				Player2.AEnd = foundA[6];
-				populateBoard(parseInt(foundA[4].charAt(1))-1, parseInt(foundA[6].charAt(1))-1, startLetter, endLetter, "A", 2);
+				var nOverlap = populateBoard(parseInt(foundA[4].charAt(1))-1, parseInt(foundA[6].charAt(1))-1, startLetter, endLetter, "A", 2);
+				if(nOverlap==false){
+					alert("Ship locations overlap");
+					clearBoard(2);
+				}
 			}
 			else{
 				alert("Length of ship is not valid");
@@ -201,7 +241,11 @@ function P2Button(){
 				validB = true;
 				Player2.BStart = foundB[4];
 				Player2.BEnd = foundB[6];
-				populateBoard(parseInt(foundB[4].charAt(1))-1, parseInt(foundB[6].charAt(1))-1, startLetter, endLetter, "B", 2);
+				var nOverlap = populateBoard(parseInt(foundB[4].charAt(1))-1, parseInt(foundB[6].charAt(1))-1, startLetter, endLetter, "B", 2);
+				if(nOverlap==false){
+					alert("Ship locations overlap");
+					clearBoard(2);
+				}
 			}
 			else{
 				alert("Length of ship B is not valid");
@@ -222,7 +266,11 @@ function P2Button(){
 				validS = true;
 				Player2.SStart = foundS[4];
 				Player2.SEnd = foundS[6];
-				populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 2);
+				var nOverlap = populateBoard(parseInt(foundS[4].charAt(1))-1, parseInt(foundS[6].charAt(1))-1, startLetter, endLetter, "S", 2);
+				if(nOverlap==false){
+					alert("Ship locations overlap");
+					clearBoard(2);
+				}
 			}
 			else{
 				alert("Length of ship S is not valid");
@@ -254,7 +302,12 @@ function populateBoard(rowStart, rowEnd, colStart, colEnd, ship, tBoard){
 	}
 	for(i=colStart; i<=colEnd; i++){
 		for(j=rowStart; j<=rowEnd; j++){
-			tBoard[j][i]=ship;
+			if(tBoard[j][i]==0){
+				tBoard[j][i]=ship;
+			}
+			else{
+				return false;
+			}
 		}
 	}
 }
@@ -353,18 +406,12 @@ function initialize(){
 		}
 	}
 	
-	for (i = 0; i < cols; i++) {
-		for (j = 0; j < rows; j++) {
-			
-		}
-	}
 	document.getElementById("topPlayer").innerHTML= Player2.name + " (" + Player1.name + "'s Target)";
 	document.getElementById("bottomPlayer").innerHTML=Player1.name +"'s Ships";
 	
 	
 }
 
-// set event listener for all elements in gameboard, run fireTorpedo function when square is clicked
 document.getElementById("grid1").addEventListener("click", makeMove, false);
 
 
