@@ -559,7 +559,6 @@ function makeMove(e) {
 			}
 			else if(tBoard[row][col] == "S"){
 				opp.Slength=opp.Slength-1;
-				alert(opp.Slength);
 				opp.hits++;
 			}
 			
